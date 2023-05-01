@@ -1,9 +1,9 @@
 """Flask app for Cupcakes"""
 import os
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 
-from models import db, connect_db, Cupcake
+from models import db, connect_db, Cupcake, DEFAULT_IMAGE_URL
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -15,10 +15,16 @@ connect_db(app)
 
 app.config['SECRET_KEY'] = "SECRET!"
 
+@app.get('/')
+def get_homepage():
+    """Shows static homepage"""
+
+    return render_template('home.html')
+
 
 @app.get('/api/cupcakes')
 def get_all_cupcakes():
-    """Return all cupcakes in JSON {'cupcakes': [{flavor, size, rating, image_url},...]}""" #FIXME: what does it do? what does it return? describe returned data
+    """Return all cupcakes in JSON {'cupcakes': [{flavor, size, rating, image_url},...]}"""
 
     cupcakes = Cupcake.query.all()
     serialized_cupcakes = [c.serialize() for c in cupcakes]
@@ -28,7 +34,7 @@ def get_all_cupcakes():
 
 @app.get('/api/cupcakes/<int:cupcake_id>')
 def get_cupcake(cupcake_id):
-    """Return a cupcake in JSON {'cupcake': {flavor, size, rating, image_url}""" #FIXME:
+    """Return a cupcake in JSON {'cupcake': {flavor, size, rating, image_url}"""
 
     cupcake = Cupcake.query.get_or_404(cupcake_id)
     serialized_cupcake = cupcake.serialize()
@@ -38,7 +44,8 @@ def get_cupcake(cupcake_id):
 
 @app.post('/api/cupcakes')
 def create_cupcake():
-    """Create a cupcake in JSON {'cupcake': {flavor, size, rating, image_url}""" #FIXME:
+    """Create a cupcake; return JSON with inputted fields
+    {'cupcake': {flavor, size, rating, image_url}"""
 
     flavor = request.json['flavor']
     size = request.json['size']
@@ -60,22 +67,25 @@ def create_cupcake():
 
 @app.patch('/api/cupcakes/<int:cupcake_id>')
 def update_cupcake(cupcake_id):
-    """Update a cupcake in JSON {'cupcake': {flavor, size, rating, image_url}""" #FIXME: more specific
+    """Update a cupcake and return JSON with updated fields
+    {'cupcake': {flavor, size, rating, image_url}"""
 
     cupcake = Cupcake.query.get_or_404(cupcake_id)
-    # cupcake.flavor = request.json.get('flavor', cupcake.flavor)
-    cupcake.flavor = request.json['flavor']
-    cupcake.size = request.json['size']
-    cupcake.rating = request.json['rating']
 
-    # if condition (if there's key: update with new image or default image, no key: no update)
-    cupcake.image_url = request.json['image_url']
+    cupcake.flavor = request.json.get('flavor', cupcake.flavor)
+    cupcake.size = request.json.get('size', cupcake.size)
+    cupcake.rating = request.json.get('rating', cupcake.rating)
+
+    if request.json.get('image_url') == '':
+        cupcake.image_url = DEFAULT_IMAGE_URL
+    else:
+        cupcake.image_url = request.json.get('image_url', cupcake.image_url)
 
     db.session.commit()
 
     serialized_updated_cupcake = cupcake.serialize()
 
-    return (jsonify(cupcake=serialized_updated_cupcake), 200) #TODO: 200 as default if no value
+    return jsonify(cupcake=serialized_updated_cupcake)
 
 @app.delete('/api/cupcakes/<int:cupcake_id>')
 def delete_cupcake(cupcake_id):
