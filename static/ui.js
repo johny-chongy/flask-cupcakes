@@ -1,47 +1,31 @@
+const BASE_URL = "/api/cupcakes";
 
-const BASE_URL = '/api/cupcakes'
+const $addCupcakeForm = $("#addCupcake");
+const $cupcakeList = $("#cupcakeList");
 
-const $addCupcakeForm = $("#addCupcake")
-
-
+/**
+ * Adding the form data to the database and show it to the page as a list
+ */
 async function handleNewCupcake(evt) {
   evt.preventDefault();
 
-  let flavor = $('#flavor').val()
-  let size = $('#size').val()
-  let rating = $('#rating').val()
-  let imageUrl = $('#imageUrl').val()
+  let flavor = $("#flavor").val(); //FIXME: const everything
+  let size = $("#size").val();
+  let rating = $("#rating").val();
+  let image_url = $("#imageUrl").val();
 
-  console.log(flavor)
+  let cupcake = { flavor, size, rating, image_url };
 
-  let cupcake = {
-    flavor:flavor,
-    size:size,
-    rating:rating,
-    imageUrl:imageUrl}
+  let response = await axios.post(BASE_URL, cupcake);
 
-  console.log(cupcake);
+  let cupcakeResponse = response.data.cupcake;
 
-  // let response = await axios.post(
-  //   BASE_URL,
-  //   {data: cupcake},
-  //   {headers: {
-  //     'Content-Type':'application/json'
-  //   }}
-  // )
+  //TODO: might be more scalable if separate out
+  //FIXME: get
 
-  // let response = await axios.post(
-  //       BASE_URL,
-  //       {headers: {
-  //         'Content-Type':'application/json'
-  //       }},
-  //       {data: jsonInput},);
-
-  // console.log(response);
-
-
+  $cupcakeList.append(
+    `<li><a href="${BASE_URL}/${cupcakeResponse.id}">${cupcakeResponse.flavor}</a></li>`
+  );
 }
 
-
-
-$addCupcakeForm.addEventListener("submit", handleNewCupcake)
+$addCupcakeForm.on("submit", handleNewCupcake);

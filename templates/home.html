@@ -9,14 +9,24 @@
 </head>
 <body>
     <div class="position-absolute top-50 start-50 translate-middle">
+      <h2>Add New Cupcake</h2>
       <form id="addCupcake">
-        <p>Flavor<input id="flavor" type="text" placeholder="Insert flavor here"></p>
-        <p>Size<input id="size"type="text" placeholder="Insert size here"></p>
-        <p>Rating<input id="rating"type="number" placeholder="Insert Rating here (1-10)"></p>
-        <p>Image Url<input id="imageUrl"type="text" placeholder="Insert image url here (optional)"></p>
+        <p class="form-label">Flavor<input class="form-control" id="flavor" type="text" placeholder="Insert flavor here"></p>
+        <p class="form-label">Size<input class="form-control" id="size"type="text" placeholder="Insert size here"></p>
+        <p class="form-label">Rating<input class="form-control" id="rating"type="number" placeholder="Insert Rating here (1-10)"></p>
+        <p class="form-label">Image Url<input class="form-control" id="imageUrl"type="text" placeholder="Insert image url here (optional)"></p>
         <button class="btn btn-primary" action="Submit">Add Cupcake</button>
       </form>
+
+      <div class="mt-5">
+        <h2>Cupcake List</h2>
+      <ul id="cupcakeList">
+      </ul>
     </div>
+    </div>
+
+
+
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/axios/dist/axios.js"></script>
