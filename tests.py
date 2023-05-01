@@ -27,6 +27,13 @@ CUPCAKE_DATA_2 = {
     "image_url": "http://test.com/cupcake2.jpg"
 }
 
+CUPCAKE_UPDATE_DATA = {
+    "flavor": "TestFlavor2-1",
+    "size": "TestSize2-1",
+    "rating": 9,
+    "image_url": "http://test.com/cupcake2.jpg"
+}
+
 
 class CupcakeViewsTestCase(TestCase):
     """Tests for views of API."""
@@ -105,3 +112,33 @@ class CupcakeViewsTestCase(TestCase):
             })
 
             self.assertEqual(Cupcake.query.count(), 2)
+
+    def test_update_cupcake(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake_id}"
+            resp = client.patch(url, json=CUPCAKE_UPDATE_DATA)
+
+            self.assertEqual(resp.status_code, 200)
+
+            self.assertEqual(resp.json, {
+                "cupcake": {
+                    "id": self.cupcake_id,
+                    "flavor": "TestFlavor2-1",
+                    "size": "TestSize2-1",
+                    "rating": 9,
+                    "image_url": "http://test.com/cupcake2.jpg"
+                }
+            })
+
+            self.assertEqual(Cupcake.query.count(), 1)
+
+    def test_delete_cupcake(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake_id}"
+            resp = client.delete(url) #no need to pass in data
+
+            self.assertEqual(resp.status_code, 200)
+
+            self.assertEqual(Cupcake.query.count(), 0)
+
+            #Additional: add a test with get request, getting 404
